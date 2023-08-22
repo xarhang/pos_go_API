@@ -23,6 +23,7 @@ func CORS() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
 func serveRoutes(r *gin.Engine) {
 	r.Use(CORS())
 	r.GET("", func(c *gin.Context) {
@@ -34,6 +35,12 @@ func serveRoutes(r *gin.Engine) {
 		c.JSON(404, gin.H{"code": "404", "message": "not found"})
 	})
 
+	//authentication
+	authController := controller.Auth{}
+	authGroup := r.Group("/auth")
+	authGroup.POST("/register", authController.Register)
+
+	//product
 	productController := controller.Product{}
 	productGroup := r.Group("/products")
 	productGroup.GET("", productController.FindAll)
