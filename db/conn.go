@@ -43,5 +43,6 @@ func Migrate() {
 		&model.Order{},
 		&model.OrderItem{},
 		&model.User{},
+		&model.Status{},
 	)
 }

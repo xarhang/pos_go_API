@@ -8,6 +8,8 @@ type User struct {
 	Password string `gorm:"not null; type:varchar(255)"`
 	Fullname string `gorm:"not null;"`
 	Avatar   string
-	Status   int
-	Rule     int
+	StatusID uint
+	RuleID   uint
+	Status   Status
+	Rule     Rule
 }

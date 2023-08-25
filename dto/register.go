@@ -5,8 +5,8 @@ type RegisterRequest struct {
 	Password string `json:"password" binding:"required"`
 	Fullname string `json:"fullname" binding:"required"`
 	Avatar   string `json:"avatar" binding:"required"`
-	Status   int    `json:"status" binding:"required"`
-	Rule     int    `json:"rule" binding:"required"`
+	StatusID uint   `json:"status_id" binding:"required"`
+	RuleID   uint   `json:"rule_id" binding:"required"`
 }
 
 type RegisterResponse struct {
@@ -15,6 +15,6 @@ type RegisterResponse struct {
 	Password string `json:"password" binding:"required"`
 	Fullname string `json:"fullname" binding:"required"`
 	Avatar   string `json:"avatar" binding:"required"`
-	Status   int    `json:"status" binding:"required"`
-	Rule     int    `json:"rule" binding:"required"`
+	StatusID uint   `json:"status_id" binding:"required"`
+	RuleID   uint   `json:"rule_id" binding:"required"`
 }
