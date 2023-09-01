@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"pos-go/controller"
+	"pos-go/middleware"
 
 	"github.com/gin-gonic/gin"
 
@@ -45,19 +46,30 @@ func ServeRoutes(r *gin.Engine) {
 	e, _ := casbin.NewEnforcer("config/rbac_model.conf", adapter)
 	e.LoadModel()
 	e.LoadPolicy()
-
 	r.Use(CORS())
+	// for logging
+	r.Use(middleware.Logger())
+	// r.Use(middleware.DefaultLogger())
+
+	//for root route
 	r.GET("", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Welcome to pos-go",
 		})
 	})
+	//for not found route
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "404", "message": "not found"})
 	})
 
+	convertRoute := controller.NumberToLak{}
+	convertRouteGroup := r.Group("numbertotext")
+	convertRouteGroup.POST("", convertRoute.ConvertToText)
 	//AuthorizationRoute
 	AuthorizationRoute(r)
+
+	//Permission
+	PermissionRoute(r, adapter)
 
 	//UserRoute
 	UserRoute(r, adapter)

@@ -13,27 +13,30 @@ import (
 )
 
 func main() {
-	dbType := "mysql"
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("error loading env file")
+		return
+	}
 	if os.Getenv("APP_ENV") == "production" {
 		gin.SetMode("release")
-		dbType = "postgres"
-	} else {
-		if err := godotenv.Load(); err != nil {
-			log.Fatal("error loading env file")
-		}
+		gin.SetMode(gin.ReleaseMode)
 	}
+	// gin.SetMode("release")
+	dbType := os.Getenv("DB_TYPE")
 	// Auth
 	dsn := os.Getenv("DATABASE_DSN")
 	a, _ := gormadapter.NewAdapter(dbType, dsn, true)
 	e, _ := casbin.NewEnforcer("config/rbac_model.conf", a)
 	e.LoadPolicy()
+
 	//Database
 	db.ConnectDB()
 	//MigrateDB
 	db.Migrate()
 	//Set Path Permission
 	os.MkdirAll("uploads/product", 0755)
-	r := gin.Default()
+	r := gin.New()
+	r.SetTrustedProxies(nil)
 	r.Static("/uploads", "./uploads")
 	//Routing
 	route.ServeRoutes(r)

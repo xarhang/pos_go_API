@@ -1,21 +1,22 @@
 package dto
 
 type ProductRequest struct {
-	SKU        string  `form:"sku" binding:"required"`
-	Name       string  `form:"name" binding:"required"`
-	Desc       string  `form:"desc"`
-	Price      float64 `form:"price" binding:"required"`
-	Status     uint    `form:"status" binding:"required"`
-	CategoryID uint    `form:"categoryId" binding:"required"`
+	SKU        string  `json:"sku" binding:"required"`
+	Name       string  `json:"name" binding:"required"`
+	Desc       string  `json:"desc"`
+	Price      float64 `json:"price" binding:"required"`
+	Status     uint    `json:"status" binding:"required"`
+	CategoryID uint    `json:"categoryId" binding:"required"`
+	Image      []byte  `json:"image"`
 }
 
 type UpdateProductRequest struct {
-	SKU        string  `form:"sku"`
-	Name       string  `form:"name"`
-	Desc       string  `form:"desc"`
-	Price      float64 `form:"price"`
-	Status     uint    `form:"status"`
-	CategoryID uint    `form:"categoryId"`
+	SKU        string  `json:"sku"`
+	Name       string  `json:"name"`
+	Desc       string  `json:"desc" `
+	Price      float64 `json:"price" `
+	Status     uint    `json:"status" `
+	CategoryID uint    `json:"categoryId"`
 }
 type CreateOrUpdateProductResponse struct {
 	ID         uint    `json:"id"`

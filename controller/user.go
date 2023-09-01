@@ -14,7 +14,7 @@ type User struct {
 }
 
 func (u User) FindAll(ctx *gin.Context) {
-	username := ctx.MustGet("username").(string)
+	username := ctx.MustGet("aud").(string)
 
 	var user []model.User
 	if Rule := ctx.MustGet("rule_id").(int); Rule == 1 {

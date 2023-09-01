@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"net/http"
 	"os"
 	"pos-go/db"
@@ -10,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -53,11 +57,18 @@ func (auth Auth) Signin(ctx *gin.Context) {
 			return
 		} else {
 			hamacSimpleSecret = []byte(os.Getenv("JWT_SECRETKEY"))
-			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-				"username": user.Username,
-				"exp":      time.Now().Add(time.Minute * 10).Unix(),
-				"rule_id":  user.RuleID,
-				"avatar":   user.Avatar,
+			rans := uuid.NewString()
+			hash := md5.Sum([]byte(user.Username + rans))
+			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+				"aud":     user.Username,
+				"sub":     fmt.Sprintf("%v", user.ID),
+				"tij":     hex.EncodeToString(hash[:]),
+				"iss":     "API-Gateway",
+				"iat":     time.Now().Unix(),
+				"nbf":     time.Now().Unix(),
+				"exp":     time.Now().Add(time.Minute * 10).Unix(),
+				"rule_id": user.RuleID,
+				"avatar":  user.Avatar,
 			})
 
 			tokenString, err := token.SignedString(hamacSimpleSecret)

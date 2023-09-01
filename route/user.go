@@ -10,8 +10,10 @@ import (
 
 func UserRoute(r *gin.Engine, adapter *gormadapter.Adapter) {
 	UserController := controller.User{}
-	UserGroup := r.Group("/users", middleware.AuthorizationJWT(),
-		middleware.Authorize("users", "read", adapter))
+	UserGroup := r.Group("/users",
+		middleware.AuthorizationJWT(),
+		middleware.Authorize("/users", "read", adapter),
+	)
 	UserGroup.GET("", UserController.FindAll)
 	UserGroup.GET("/:id", UserController.FindOne)
 

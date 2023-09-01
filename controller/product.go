@@ -90,13 +90,19 @@ func (p Product) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	image, err := ctx.FormFile("image")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	uimage := form.Image
+
+	// image, err := ctx.FormFile("image")
+	image := []byte(uimage)
+
+	imagePath := ""
+	if image != nil {
+		imagePath = "./uploads/product/" + uuid.New().String()
+		os.WriteFile(imagePath, image, 0755)
+
 	}
-	imagePath := "./uploads/product/" + uuid.New().String()
-	ctx.SaveUploadedFile(image, imagePath)
+	// ctx.SaveUploadedFile(image, imagePath)
+
 	product := model.Product{
 		Name:       form.Name,
 		SKU:        form.SKU,
@@ -107,6 +113,7 @@ func (p Product) Create(ctx *gin.Context) {
 		CategoryID: form.CategoryID,
 	}
 	if err := db.Conn.Create(&product).Error; err != nil {
+		os.Remove(imagePath)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
