@@ -59,7 +59,7 @@ func (auth Auth) Signin(ctx *gin.Context) {
 			hamacSimpleSecret = []byte(os.Getenv("JWT_SECRETKEY"))
 			rans := uuid.NewString()
 			hash := md5.Sum([]byte(user.Username + rans))
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 				"aud":     user.Username,
 				"sub":     fmt.Sprintf("%v", user.ID),
 				"tij":     hex.EncodeToString(hash[:]),
@@ -78,8 +78,17 @@ func (auth Auth) Signin(ctx *gin.Context) {
 			}
 			// fmt.Println("here.........................?", err)
 			// fmt.Println(tokenString)
-
-			ctx.JSON(http.StatusOK, gin.H{"accessToken": tokenString, "userData": result})
+			refreshToken := jwt.New(jwt.SigningMethodHS256)
+			rtClaims := refreshToken.Claims.(jwt.MapClaims)
+			rtClaims["sub"] = fmt.Sprintf("%v", user.ID)
+			rtClaims["aud"] = user.Username
+			rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+			rt, err2 := refreshToken.SignedString([]byte("secret"))
+			if err2 != nil {
+				ctx.JSON(http.StatusOK, gin.H{"accessToken": tokenString, "userData": result})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"accessToken": tokenString, "refresh_token": rt, "userData": result})
 			return
 
 		}
